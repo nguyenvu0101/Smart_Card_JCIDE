@@ -1,0 +1,8 @@
+<JavaCardProject name="HospitalCard">
+<USER>
+<PKG name="HospitalCard" aid="00 11 22 33 44 55 67" major="1" minor="0">
+<APPLET aid="00 11 22 33 44 55 67 11" instanceaid="" parameter="" authority="" privileges="" index="14576" name="PatientCardApplet"/>
+</PKG>
+<Libs/>
+</USER>
+</JavaCardProject>
