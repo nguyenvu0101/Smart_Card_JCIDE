@@ -1,5 +1,5 @@
 // converted by version 1.3
-// on Thu Nov 27 18:00:03 ICT 2025
+// on Fri Nov 28 16:29:27 ICT 2025
 
 .package HospitalCard {
 	.aid 0x0:0x11:0x22:0x33:0x44:0x55:0x67;
@@ -7,6 +7,8 @@
 
 	.imports {
 		0xA0:0x0:0x0:0x0:0x62:0x1:0x1 1.3;		//javacard/framework
+		0xA0:0x0:0x0:0x0:0x62:0x1:0x2 1.3;		//javacard/security
+		0xA0:0x0:0x0:0x0:0x62:0x2:0x1 1.3;		//javacardx/crypto
 		0xA0:0x0:0x0:0x0:0x62:0x0:0x1 1.0;		//java/lang
 	}
 
@@ -22,105 +24,137 @@
 		// 2
 		instanceFieldRef byte[] PatientCardApplet/patientId;
 		// 3
-		instanceFieldRef short PatientCardApplet/patientIdLen;
-		// 4
 		instanceFieldRef byte[] PatientCardApplet/fullName;
-		// 5
-		instanceFieldRef short PatientCardApplet/fullNameLen;
-		// 6
+		// 4
 		instanceFieldRef byte[] PatientCardApplet/dateOfBirth;
-		// 7
-		instanceFieldRef short PatientCardApplet/dateOfBirthLen;
-		// 8
+		// 5
 		instanceFieldRef byte[] PatientCardApplet/bloodType;
-		// 9
-		instanceFieldRef short PatientCardApplet/bloodTypeLen;
-		// 10
+		// 6
 		instanceFieldRef byte[] PatientCardApplet/allergies;
-		// 11
-		instanceFieldRef short PatientCardApplet/allergiesLen;
-		// 12
+		// 7
 		instanceFieldRef byte[] PatientCardApplet/chronicIllness;
-		// 13
-		instanceFieldRef short PatientCardApplet/chronicLen;
-		// 14
+		// 8
 		instanceFieldRef byte[] PatientCardApplet/healthInsuranceId;
+		// 9
+		instanceFieldRef 1.8 PatientCardApplet/rsaPrivKey;
+		// 10
+		instanceFieldRef 2.1 PatientCardApplet/rsaCipher;
+		// 11
+		instanceFieldRef short PatientCardApplet/patientIdLen;
+		// 12
+		instanceFieldRef short PatientCardApplet/fullNameLen;
+		// 13
+		instanceFieldRef short PatientCardApplet/dateOfBirthLen;
+		// 14
+		instanceFieldRef short PatientCardApplet/bloodTypeLen;
 		// 15
-		instanceFieldRef short PatientCardApplet/healthIdLen;
+		instanceFieldRef short PatientCardApplet/allergiesLen;
 		// 16
-		virtualMethodRef 0.9.8([BSB)V;		// update([BSB)V
+		instanceFieldRef short PatientCardApplet/chronicLen;
 		// 17
-		classRef 0.9;		// javacard/framework/OwnerPIN
+		instanceFieldRef short PatientCardApplet/healthIdLen;
 		// 18
-		staticMethodRef 0.9.0(BB)V;		// javacard/framework/OwnerPIN.<init>(BB)V
+		virtualMethodRef 0.9.8([BSB)V;		// update([BSB)V
 		// 19
-		staticMethodRef 0.3.0()V;		// javacard/framework/Applet.<init>()V
-		// 20
 		virtualMethodRef 0.3.1()V;		// register()V
-		// 21
+		// 20
 		classRef PatientCardApplet;
-		// 22
+		// 21
 		staticMethodRef PatientCardApplet/<init>([BSB)V;
-		// 23
+		// 22
 		virtualMethodRef 0.3.3()Z;		// selectingApplet()Z
-		// 24
+		// 23
 		virtualMethodRef 0.10.1()[B;		// getBuffer()[B
-		// 25
+		// 24
 		staticMethodRef 0.7.1(S)V;		// javacard/framework/ISOException.throwIt(S)V
-		// 26
+		// 25
 		staticMethodRef PatientCardApplet/verifyPIN(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-		// 27
+		// 26
 		staticMethodRef PatientCardApplet/changePIN(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-		// 28
+		// 27
 		staticMethodRef PatientCardApplet/setPinFromAdmin(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-		// 29
+		// 28
 		staticMethodRef PatientCardApplet/getBalance(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-		// 30
+		// 29
 		staticMethodRef PatientCardApplet/credit(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-		// 31
+		// 30
 		staticMethodRef PatientCardApplet/debit(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-		// 32
+		// 31
 		staticMethodRef PatientCardApplet/setPatientId(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-		// 33
+		// 32
 		staticMethodRef PatientCardApplet/getPatientId(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-		// 34
+		// 33
 		staticMethodRef PatientCardApplet/setProfile(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
+		// 34
+		staticMethodRef PatientCardApplet/setRsaPrivateKey(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
 		// 35
-		virtualMethodRef 0.10.6()S;		// setIncomingAndReceive()S
+		staticMethodRef PatientCardApplet/signChallenge(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
 		// 36
-		virtualMethodRef 0.9.1([BSB)Z;		// check([BSB)Z
+		virtualMethodRef 0.10.6()S;		// setIncomingAndReceive()S
 		// 37
-		virtualMethodRef 0.9.2()B;		// getTriesRemaining()B
+		virtualMethodRef 0.9.1([BSB)Z;		// check([BSB)Z
 		// 38
-		virtualMethodRef 0.9.4()Z;		// isValidated()Z
+		virtualMethodRef 0.9.2()B;		// getTriesRemaining()B
 		// 39
-		virtualMethodRef 0.9.5()V;		// reset()V
+		virtualMethodRef 0.9.4()Z;		// isValidated()Z
 		// 40
-		staticMethodRef 0.16.6([BSS)S;		// javacard/framework/Util.setShort([BSS)S
+		virtualMethodRef 0.9.5()V;		// reset()V
 		// 41
-		virtualMethodRef 0.10.8(SS)V;		// setOutgoingAndSend(SS)V
+		staticMethodRef 0.16.6([BSS)S;		// javacard/framework/Util.setShort([BSS)S
 		// 42
-		staticMethodRef 0.16.4([BS)S;		// javacard/framework/Util.getShort([BS)S
+		virtualMethodRef 0.10.8(SS)V;		// setOutgoingAndSend(SS)V
 		// 43
+		staticMethodRef 0.16.4([BS)S;		// javacard/framework/Util.getShort([BS)S
+		// 44
 		staticMethodRef 0.16.2([BS[BSS)S;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+		// 45
+		classRef 1.12;		// javacard/security/CryptoException
+		// 46
+		classRef 0.9;		// javacard/framework/OwnerPIN
+		// 47
+		staticMethodRef 0.9.0(BB)V;		// javacard/framework/OwnerPIN.<init>(BB)V
+		// 48
+		staticMethodRef 1.13.0(BSZ)Ljavacard/security/Key;;		// javacard/security/KeyBuilder.buildKey(BSZ)Ljavacard/security/Key;
+			.descriptor	Ljavacard/security/Key;	1.0;
+
+		// 49
+		classRef 1.8;		// javacard/security/RSAPrivateKey
+		// 50
+		staticMethodRef 0.3.0()V;		// javacard/framework/Applet.<init>()V
+		// 51
+		staticMethodRef 2.1.0(BZ)Ljavacardx/crypto/Cipher;;		// javacardx/crypto/Cipher.getInstance(BZ)Ljavacardx/crypto/Cipher;
+			.descriptor	Ljavacardx/crypto/Cipher;	2.1;
+
+		// 52
+		classRef 3.2;		// java/lang/Exception
+		// 53
+		virtualMethodRef 2.1.3(Ljavacard/security/Key;B)V;		// init(Ljavacard/security/Key;B)V
+			.descriptor	Ljavacard/security/Key;	1.0;
+
+		// 54
+		virtualMethodRef 2.1.1([BSS[BS)S;		// doFinal([BSS[BS)S
 	}
 
 	.class public PatientCardApplet 0 extends 0.3 {		// extends javacard/framework/Applet
@@ -134,14 +168,16 @@
 			private byte[] allergies 5;		// [B
 			private byte[] chronicIllness 6;		// [B
 			private byte[] healthInsuranceId 7;		// [B
-			private short balance 8;		// S
-			private short patientIdLen 9;		// S
-			private short fullNameLen 10;		// S
-			private short dateOfBirthLen 11;		// S
-			private short bloodTypeLen 12;		// S
-			private short allergiesLen 13;		// S
-			private short chronicLen 14;		// S
-			private short healthIdLen 15;		// S
+			private 1.8 rsaPrivKey 8;		// Ljavacard/security/RSAPrivateKey;
+			private 2.1 rsaCipher 9;		// Ljavacardx/crypto/Cipher;
+			private short balance 10;		// S
+			private short patientIdLen 11;		// S
+			private short fullNameLen 12;		// S
+			private short dateOfBirthLen 13;		// S
+			private short bloodTypeLen 14;		// S
+			private short allergiesLen 15;		// S
+			private short chronicLen 16;		// S
+			private short healthIdLen 17;		// S
 			private static final byte CARD_CLA = -80;		// B
 			private static final byte INS_VERIFY_PIN = 32;		// B
 			private static final byte INS_CHANGE_PIN = 33;		// B
@@ -152,6 +188,8 @@
 			private static final byte INS_SET_PATIENT_ID = 64;		// B
 			private static final byte INS_GET_PATIENT_ID = 65;		// B
 			private static final byte INS_SET_PROFILE = 66;		// B
+			private static final byte INS_SET_RSA_KEY = 80;		// B
+			private static final byte INS_SIGN_CHALLENGE = 81;		// B
 			private static final byte PIN_TRY_LIMIT = 3;		// B
 			private static final byte MAX_PIN_SIZE = 6;		// B
 			private static final short MAX_PATIENT_ID_LEN = 20;		// S
@@ -179,16 +217,16 @@
 
 		.method protected <init>([BSB)V 0 {
 			.stack 5;
-			.locals 1;
+			.locals 2;
 
 				L0:	aload_0;
-					invokespecial 19;		// javacard/framework/Applet.<init>()V
+					invokespecial 50;		// javacard/framework/Applet.<init>()V
 					aload_0;
-					new 17;		// javacard/framework/OwnerPIN
+					new 46;		// javacard/framework/OwnerPIN
 					dup;
 					sconst_3;
 					bspush 6;
-					invokespecial 18;		// javacard/framework/OwnerPIN.<init>(BB)V
+					invokespecial 47;		// javacard/framework/OwnerPIN.<init>(BB)V
 					putfield_a 0;		// reference HospitalCard/PatientCardApplet.pin
 					sconst_4;
 					newarray 11;
@@ -213,7 +251,7 @@
 					aload 4;
 					sconst_0;
 					sconst_4;
-					invokevirtual 16;		// update([BSB)V
+					invokevirtual 18;		// update([BSB)V
 					aload_0;
 					sconst_0;
 					putfield_s 1;		// short HospitalCard/PatientCardApplet.balance
@@ -222,81 +260,81 @@
 					newarray 11;
 					putfield_a 2;		// reference HospitalCard/PatientCardApplet.patientId
 					aload_0;
-					sconst_0;
-					putfield_s 3;		// short HospitalCard/PatientCardApplet.patientIdLen
-					aload_0;
 					bspush 40;
 					newarray 11;
-					putfield_a 4;		// reference HospitalCard/PatientCardApplet.fullName
-					aload_0;
-					sconst_0;
-					putfield_s 5;		// short HospitalCard/PatientCardApplet.fullNameLen
+					putfield_a 3;		// reference HospitalCard/PatientCardApplet.fullName
 					aload_0;
 					bspush 10;
 					newarray 11;
-					putfield_a 6;		// reference HospitalCard/PatientCardApplet.dateOfBirth
-					aload_0;
-					sconst_0;
-					putfield_s 7;		// short HospitalCard/PatientCardApplet.dateOfBirthLen
+					putfield_a 4;		// reference HospitalCard/PatientCardApplet.dateOfBirth
 					aload_0;
 					sconst_3;
 					newarray 11;
-					putfield_a 8;		// reference HospitalCard/PatientCardApplet.bloodType
-					aload_0;
-					sconst_0;
-					putfield_s 9;		// short HospitalCard/PatientCardApplet.bloodTypeLen
+					putfield_a 5;		// reference HospitalCard/PatientCardApplet.bloodType
 					aload_0;
 					bspush 40;
 					newarray 11;
-					putfield_a 10;		// reference HospitalCard/PatientCardApplet.allergies
-					aload_0;
-					sconst_0;
-					putfield_s 11;		// short HospitalCard/PatientCardApplet.allergiesLen
+					putfield_a 6;		// reference HospitalCard/PatientCardApplet.allergies
 					aload_0;
 					bspush 40;
 					newarray 11;
-					putfield_a 12;		// reference HospitalCard/PatientCardApplet.chronicIllness
-					aload_0;
-					sconst_0;
-					putfield_s 13;		// short HospitalCard/PatientCardApplet.chronicLen
+					putfield_a 7;		// reference HospitalCard/PatientCardApplet.chronicIllness
 					aload_0;
 					bspush 20;
 					newarray 11;
-					putfield_a 14;		// reference HospitalCard/PatientCardApplet.healthInsuranceId
-					aload_0;
+					putfield_a 8;		// reference HospitalCard/PatientCardApplet.healthInsuranceId
+				L2:	aload_0;
+					sconst_5;
+					sspush 512;
 					sconst_0;
-					putfield_s 15;		// short HospitalCard/PatientCardApplet.healthIdLen
+					invokestatic 48;		// javacard/security/KeyBuilder.buildKey(BSZ)Ljavacard/security/Key;
+					checkcast 0 49;		// T_CLASSORINTERFACE javacard/security/RSAPrivateKey
+					putfield_a 9;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
 					aload_0;
-					invokevirtual 20;		// register()V
+					bspush 10;
+					sconst_0;
+					invokestatic 51;		// javacardx/crypto/Cipher.getInstance(BZ)Ljavacardx/crypto/Cipher;
+					putfield_a 10;		// reference HospitalCard/PatientCardApplet.rsaCipher
+				L3:	goto L6;
+				L4:	astore 5;
+				L5:	aload_0;
+					aconst_null;
+					putfield_a 9;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
+				L6:	aload_0;
+					invokevirtual 19;		// register()V
 					return;
+			.exceptionTable {
+				// start_block end_block handler_block catch_type_index
+				L2 L3 L4 45;
+			}
 		}
 
 		.method public static install([BSB)V 1 {
 			.stack 5;
 			.locals 0;
 
-				L0:	new 21;		// HospitalCard/PatientCardApplet
+				L0:	new 20;		// HospitalCard/PatientCardApplet
 					dup;
 					aload_0;
 					sload_1;
 					sload_2;
-					invokespecial 22;		// HospitalCard/PatientCardApplet.<init>([BSB)V
+					invokespecial 21;		// HospitalCard/PatientCardApplet.<init>([BSB)V
 					pop;
 					return;
 		}
 
 		.method public process(Ljavacard/framework/APDU;)V 7 {
 			.stack 2;
-			.locals 2;
+			.locals 1;
 
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
 				L0:	aload_0;
-					invokevirtual 23;		// selectingApplet()Z
+					invokevirtual 22;		// selectingApplet()Z
 					ifeq L2;
 				L1:	return;
 				L2:	aload_1;
-					invokevirtual 24;		// getBuffer()[B
+					invokevirtual 23;		// getBuffer()[B
 					astore_2;
 				L3:	aload_2;
 					sconst_0;
@@ -314,52 +352,58 @@
 					bspush -80;
 					if_scmpeq L8;
 				L7:	sspush 28160;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
 				L8:	aload_2;
 					sconst_1;
 					baload;
-					sstore_3;
-				L9:	sload_3;
-					stableswitch L19 32 66 L10 L11 L12 L19 L19 L19 L19 L19 L19 L19 L19 L19 L19 L19 L19 L19 L13 L14 L15 L19 L19 L19 L19 L19 L19 L19 L19 L19 L19 L19 L19 L19 L16 L17 L18;
+					slookupswitch L20 11 32 L9 33 L10 34 L11 48 L12 49 L13 50 L14 64 L15 65 L16 66 L17 80 L18 81 L19;
+				L9:	aload_0;
+					aload_1;
+					invokespecial 25;		// HospitalCard/PatientCardApplet.verifyPIN(Ljavacard/framework/APDU;)V
+					goto L21;
 				L10:	aload_0;
 					aload_1;
-					invokespecial 26;		// HospitalCard/PatientCardApplet.verifyPIN(Ljavacard/framework/APDU;)V
-					goto L20;
+					invokespecial 26;		// HospitalCard/PatientCardApplet.changePIN(Ljavacard/framework/APDU;)V
+					goto L21;
 				L11:	aload_0;
 					aload_1;
-					invokespecial 27;		// HospitalCard/PatientCardApplet.changePIN(Ljavacard/framework/APDU;)V
-					goto L20;
+					invokespecial 27;		// HospitalCard/PatientCardApplet.setPinFromAdmin(Ljavacard/framework/APDU;)V
+					goto L21;
 				L12:	aload_0;
 					aload_1;
-					invokespecial 28;		// HospitalCard/PatientCardApplet.setPinFromAdmin(Ljavacard/framework/APDU;)V
-					goto L20;
+					invokespecial 28;		// HospitalCard/PatientCardApplet.getBalance(Ljavacard/framework/APDU;)V
+					goto L21;
 				L13:	aload_0;
 					aload_1;
-					invokespecial 29;		// HospitalCard/PatientCardApplet.getBalance(Ljavacard/framework/APDU;)V
-					goto L20;
+					invokespecial 29;		// HospitalCard/PatientCardApplet.credit(Ljavacard/framework/APDU;)V
+					goto L21;
 				L14:	aload_0;
 					aload_1;
-					invokespecial 30;		// HospitalCard/PatientCardApplet.credit(Ljavacard/framework/APDU;)V
-					goto L20;
+					invokespecial 30;		// HospitalCard/PatientCardApplet.debit(Ljavacard/framework/APDU;)V
+					goto L21;
 				L15:	aload_0;
 					aload_1;
-					invokespecial 31;		// HospitalCard/PatientCardApplet.debit(Ljavacard/framework/APDU;)V
-					goto L20;
+					invokespecial 31;		// HospitalCard/PatientCardApplet.setPatientId(Ljavacard/framework/APDU;)V
+					goto L21;
 				L16:	aload_0;
 					aload_1;
-					invokespecial 32;		// HospitalCard/PatientCardApplet.setPatientId(Ljavacard/framework/APDU;)V
-					goto L20;
+					invokespecial 32;		// HospitalCard/PatientCardApplet.getPatientId(Ljavacard/framework/APDU;)V
+					goto L21;
 				L17:	aload_0;
 					aload_1;
-					invokespecial 33;		// HospitalCard/PatientCardApplet.getPatientId(Ljavacard/framework/APDU;)V
-					goto L20;
+					invokespecial 33;		// HospitalCard/PatientCardApplet.setProfile(Ljavacard/framework/APDU;)V
+					goto L21;
 				L18:	aload_0;
 					aload_1;
-					invokespecial 34;		// HospitalCard/PatientCardApplet.setProfile(Ljavacard/framework/APDU;)V
-					goto L20;
-				L19:	sspush 27904;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
-				L20:	return;
+					invokespecial 34;		// HospitalCard/PatientCardApplet.setRsaPrivateKey(Ljavacard/framework/APDU;)V
+					goto L21;
+				L19:	aload_0;
+					aload_1;
+					invokespecial 35;		// HospitalCard/PatientCardApplet.signChallenge(Ljavacard/framework/APDU;)V
+					goto L21;
+				L20:	sspush 27904;
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
+				L21:	return;
 		}
 
 		.method private verifyPIN(Ljavacard/framework/APDU;)V {
@@ -369,35 +413,34 @@
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
 				L0:	aload_1;
-					invokevirtual 24;		// getBuffer()[B
+					invokevirtual 23;		// getBuffer()[B
 					astore_2;
 				L1:	aload_2;
 					sconst_4;
 					baload;
 					sstore_3;
 				L2:	aload_1;
-					invokevirtual 35;		// setIncomingAndReceive()S
+					invokevirtual 36;		// setIncomingAndReceive()S
 					pop;
 					getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
 					aload_2;
 					sconst_5;
 					sload_3;
-					invokevirtual 36;		// check([BSB)Z
+					invokevirtual 37;		// check([BSB)Z
 					ifeq L4;
 				L3:	return;
 				L4:	getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
-					invokevirtual 37;		// getTriesRemaining()B
-					ifne L6;
-				L5:	sspush 27011;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
-				L6:	sspush 25536;
-					getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
-					invokevirtual 37;		// getTriesRemaining()B
-					sor;
+					invokevirtual 38;		// getTriesRemaining()B
 					sstore 4;
-				L7:	sload 4;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
-				L8:	return;
+				L5:	sload 4;
+					ifne L7;
+				L6:	sspush 27011;
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
+				L7:	sspush 25536;
+					sload 4;
+					sor;
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
+					return;
 		}
 
 		.method private changePIN(Ljavacard/framework/APDU;)V {
@@ -407,32 +450,33 @@
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
 				L0:	getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
-					invokevirtual 38;		// isValidated()Z
+					invokevirtual 39;		// isValidated()Z
 					ifne L2;
 				L1:	sspush 27010;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
 				L2:	aload_1;
-					invokevirtual 24;		// getBuffer()[B
+					invokevirtual 23;		// getBuffer()[B
 					astore_2;
 				L3:	aload_2;
 					sconst_4;
 					baload;
 					sstore_3;
 				L4:	aload_1;
-					invokevirtual 35;		// setIncomingAndReceive()S
+					invokevirtual 36;		// setIncomingAndReceive()S
 					pop;
 					sload_3;
-					ifle L6;
+					sconst_4;
+					if_scmplt L6;
 				L5:	sload_3;
 					bspush 6;
 					if_scmple L7;
 				L6:	sspush 26368;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
 				L7:	getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
 					aload_2;
 					sconst_5;
 					sload_3;
-					invokevirtual 16;		// update([BSB)V
+					invokevirtual 18;		// update([BSB)V
 					return;
 		}
 
@@ -443,29 +487,30 @@
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
 				L0:	aload_1;
-					invokevirtual 24;		// getBuffer()[B
+					invokevirtual 23;		// getBuffer()[B
 					astore_2;
 				L1:	aload_2;
 					sconst_4;
 					baload;
 					sstore_3;
 				L2:	aload_1;
-					invokevirtual 35;		// setIncomingAndReceive()S
+					invokevirtual 36;		// setIncomingAndReceive()S
 					pop;
 					sload_3;
-					ifle L4;
+					sconst_4;
+					if_scmplt L4;
 				L3:	sload_3;
 					bspush 6;
 					if_scmple L5;
 				L4:	sspush 26368;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
 				L5:	getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
-					invokevirtual 39;		// reset()V
+					invokevirtual 40;		// reset()V
 					getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
 					aload_2;
 					sconst_5;
 					sload_3;
-					invokevirtual 16;		// update([BSB)V
+					invokevirtual 18;		// update([BSB)V
 					return;
 		}
 
@@ -476,22 +521,22 @@
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
 				L0:	getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
-					invokevirtual 38;		// isValidated()Z
+					invokevirtual 39;		// isValidated()Z
 					ifne L2;
 				L1:	sspush 27010;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
 				L2:	aload_1;
-					invokevirtual 24;		// getBuffer()[B
+					invokevirtual 23;		// getBuffer()[B
 					astore_2;
 				L3:	aload_2;
 					sconst_0;
 					getfield_s_this 1;		// short HospitalCard/PatientCardApplet.balance
-					invokestatic 40;		// javacard/framework/Util.setShort([BSS)S
+					invokestatic 41;		// javacard/framework/Util.setShort([BSS)S
 					pop;
 					aload_1;
 					sconst_0;
 					sconst_2;
-					invokevirtual 41;		// setOutgoingAndSend(SS)V
+					invokevirtual 42;		// setOutgoingAndSend(SS)V
 					return;
 		}
 
@@ -502,24 +547,24 @@
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
 				L0:	getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
-					invokevirtual 38;		// isValidated()Z
+					invokevirtual 39;		// isValidated()Z
 					ifne L2;
 				L1:	sspush 27010;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
 				L2:	aload_1;
-					invokevirtual 24;		// getBuffer()[B
+					invokevirtual 23;		// getBuffer()[B
 					astore_2;
 				L3:	aload_1;
-					invokevirtual 35;		// setIncomingAndReceive()S
+					invokevirtual 36;		// setIncomingAndReceive()S
 					pop;
 					aload_2;
 					sconst_5;
-					invokestatic 42;		// javacard/framework/Util.getShort([BS)S
+					invokestatic 43;		// javacard/framework/Util.getShort([BS)S
 					sstore_3;
 				L4:	sload_3;
 					ifgt L6;
 				L5:	sspush 27012;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
 				L6:	aload_0;
 					dup;
 					getfield_s 1;		// short HospitalCard/PatientCardApplet.balance
@@ -536,29 +581,29 @@
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
 				L0:	getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
-					invokevirtual 38;		// isValidated()Z
+					invokevirtual 39;		// isValidated()Z
 					ifne L2;
 				L1:	sspush 27010;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
 				L2:	aload_1;
-					invokevirtual 24;		// getBuffer()[B
+					invokevirtual 23;		// getBuffer()[B
 					astore_2;
 				L3:	aload_1;
-					invokevirtual 35;		// setIncomingAndReceive()S
+					invokevirtual 36;		// setIncomingAndReceive()S
 					pop;
 					aload_2;
 					sconst_5;
-					invokestatic 42;		// javacard/framework/Util.getShort([BS)S
+					invokestatic 43;		// javacard/framework/Util.getShort([BS)S
 					sstore_3;
 				L4:	sload_3;
 					ifgt L6;
 				L5:	sspush 27012;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
 				L6:	getfield_s_this 1;		// short HospitalCard/PatientCardApplet.balance
 					sload_3;
 					if_scmpge L8;
 				L7:	sspush 27268;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
 				L8:	aload_0;
 					dup;
 					getfield_s 1;		// short HospitalCard/PatientCardApplet.balance
@@ -570,12 +615,12 @@
 
 		.method private setPatientId(Ljavacard/framework/APDU;)V {
 			.stack 5;
-			.locals 3;
+			.locals 2;
 
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
 				L0:	aload_1;
-					invokevirtual 24;		// getBuffer()[B
+					invokevirtual 23;		// getBuffer()[B
 					astore_2;
 				L1:	aload_2;
 					sconst_4;
@@ -584,25 +629,23 @@
 					sand;
 					sstore_3;
 				L2:	sload_3;
-					ifle L4;
-				L3:	sload_3;
 					bspush 20;
-					if_scmple L5;
-				L4:	sspush 26368;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
-				L5:	aload_1;
-					invokevirtual 35;		// setIncomingAndReceive()S
-					sstore 4;
-				L6:	aload_2;
+					if_scmple L4;
+				L3:	sspush 26368;
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	aload_1;
+					invokevirtual 36;		// setIncomingAndReceive()S
+					pop;
+					aload_2;
 					sconst_5;
 					getfield_a_this 2;		// reference HospitalCard/PatientCardApplet.patientId
 					sconst_0;
-					sload 4;
-					invokestatic 43;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					sload_3;
+					invokestatic 44;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
 					aload_0;
-					sload 4;
-					putfield_s 3;		// short HospitalCard/PatientCardApplet.patientIdLen
+					sload_3;
+					putfield_s 11;		// short HospitalCard/PatientCardApplet.patientIdLen
 					return;
 		}
 
@@ -613,35 +656,35 @@
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
 				L0:	getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
-					invokevirtual 38;		// isValidated()Z
+					invokevirtual 39;		// isValidated()Z
 					ifne L2;
 				L1:	sspush 27010;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
 				L2:	aload_1;
-					invokevirtual 24;		// getBuffer()[B
+					invokevirtual 23;		// getBuffer()[B
 					astore_2;
 				L3:	getfield_a_this 2;		// reference HospitalCard/PatientCardApplet.patientId
 					sconst_0;
 					aload_2;
 					sconst_0;
-					getfield_s_this 3;		// short HospitalCard/PatientCardApplet.patientIdLen
-					invokestatic 43;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					getfield_s_this 11;		// short HospitalCard/PatientCardApplet.patientIdLen
+					invokestatic 44;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
 					aload_1;
 					sconst_0;
-					getfield_s_this 3;		// short HospitalCard/PatientCardApplet.patientIdLen
-					invokevirtual 41;		// setOutgoingAndSend(SS)V
+					getfield_s_this 11;		// short HospitalCard/PatientCardApplet.patientIdLen
+					invokevirtual 42;		// setOutgoingAndSend(SS)V
 					return;
 		}
 
 		.method private setProfile(Ljavacard/framework/APDU;)V {
 			.stack 5;
-			.locals 5;
+			.locals 3;
 
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
 				L0:	aload_1;
-					invokevirtual 24;		// getBuffer()[B
+					invokevirtual 23;		// getBuffer()[B
 					astore_2;
 				L1:	aload_2;
 					sconst_4;
@@ -649,168 +692,225 @@
 					sspush 255;
 					sand;
 					sstore_3;
-				L2:	sload_3;
-					ifgt L4;
-				L3:	sspush 26368;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
-				L4:	aload_1;
-					invokevirtual 35;		// setIncomingAndReceive()S
+				L2:	aload_1;
+					invokevirtual 36;		// setIncomingAndReceive()S
+					pop;
+					sconst_5;
 					sstore 4;
-				L5:	sconst_5;
-					sstore 5;
-				L6:	aload_2;
-					sload 5;
-					sinc 5 1;
-					baload;
-					sstore 6;
-				L7:	sload 6;
-					iflt L9;
-				L8:	sload 6;
-					bspush 40;
-					if_scmple L10;
-				L9:	sspush 26368;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
-				L10:	aload_2;
-					sload 5;
-					getfield_a_this 4;		// reference HospitalCard/PatientCardApplet.fullName
-					sconst_0;
-					sload 6;
-					invokestatic 43;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
-					pop;
-					aload_0;
-					sload 6;
-					putfield_s 5;		// short HospitalCard/PatientCardApplet.fullNameLen
-					sload 5;
-					sload 6;
-					sadd;
-					sstore 5;
+				L3:	aload_0;
 					aload_2;
-					sload 5;
-					sinc 5 1;
+					sload 4;
+					sinc 4 1;
 					baload;
-					sstore 6;
-					sload 6;
-					iflt L12;
-				L11:	sload 6;
-					bspush 10;
-					if_scmple L13;
-				L12:	sspush 26368;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
-				L13:	aload_2;
-					sload 5;
-					getfield_a_this 6;		// reference HospitalCard/PatientCardApplet.dateOfBirth
-					sconst_0;
-					sload 6;
-					invokestatic 43;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
-					pop;
-					aload_0;
-					sload 6;
-					putfield_s 7;		// short HospitalCard/PatientCardApplet.dateOfBirthLen
-					sload 5;
-					sload 6;
-					sadd;
-					sstore 5;
+					putfield_s 12;		// short HospitalCard/PatientCardApplet.fullNameLen
 					aload_2;
-					sload 5;
-					sinc 5 1;
-					baload;
-					sstore 6;
-					sload 6;
-					iflt L15;
-				L14:	sload 6;
-					sconst_3;
-					if_scmple L16;
-				L15:	sspush 26368;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
-				L16:	aload_2;
-					sload 5;
-					getfield_a_this 8;		// reference HospitalCard/PatientCardApplet.bloodType
+					sload 4;
+					getfield_a_this 3;		// reference HospitalCard/PatientCardApplet.fullName
 					sconst_0;
-					sload 6;
-					invokestatic 43;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					getfield_s_this 12;		// short HospitalCard/PatientCardApplet.fullNameLen
+					invokestatic 44;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
-					aload_0;
-					sload 6;
-					putfield_s 9;		// short HospitalCard/PatientCardApplet.bloodTypeLen
-					sload 5;
-					sload 6;
+					sload 4;
+					getfield_s_this 12;		// short HospitalCard/PatientCardApplet.fullNameLen
 					sadd;
-					sstore 5;
-					aload_2;
-					sload 5;
-					sinc 5 1;
-					baload;
-					sstore 6;
-					sload 6;
-					iflt L18;
-				L17:	sload 6;
-					bspush 40;
-					if_scmple L19;
-				L18:	sspush 26368;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
-				L19:	aload_2;
-					sload 5;
-					getfield_a_this 10;		// reference HospitalCard/PatientCardApplet.allergies
-					sconst_0;
-					sload 6;
-					invokestatic 43;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
-					pop;
+					sstore 4;
 					aload_0;
-					sload 6;
-					putfield_s 11;		// short HospitalCard/PatientCardApplet.allergiesLen
-					sload 5;
-					sload 6;
+					aload_2;
+					sload 4;
+					sinc 4 1;
+					baload;
+					putfield_s 13;		// short HospitalCard/PatientCardApplet.dateOfBirthLen
+					aload_2;
+					sload 4;
+					getfield_a_this 4;		// reference HospitalCard/PatientCardApplet.dateOfBirth
+					sconst_0;
+					getfield_s_this 13;		// short HospitalCard/PatientCardApplet.dateOfBirthLen
+					invokestatic 44;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					sload 4;
+					getfield_s_this 13;		// short HospitalCard/PatientCardApplet.dateOfBirthLen
 					sadd;
-					sstore 5;
-					aload_2;
-					sload 5;
-					sinc 5 1;
-					baload;
-					sstore 6;
-					sload 6;
-					iflt L21;
-				L20:	sload 6;
-					bspush 40;
-					if_scmple L22;
-				L21:	sspush 26368;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
-				L22:	aload_2;
-					sload 5;
-					getfield_a_this 12;		// reference HospitalCard/PatientCardApplet.chronicIllness
-					sconst_0;
-					sload 6;
-					invokestatic 43;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
-					pop;
+					sstore 4;
 					aload_0;
-					sload 6;
-					putfield_s 13;		// short HospitalCard/PatientCardApplet.chronicLen
-					sload 5;
-					sload 6;
+					aload_2;
+					sload 4;
+					sinc 4 1;
+					baload;
+					putfield_s 14;		// short HospitalCard/PatientCardApplet.bloodTypeLen
+					aload_2;
+					sload 4;
+					getfield_a_this 5;		// reference HospitalCard/PatientCardApplet.bloodType
+					sconst_0;
+					getfield_s_this 14;		// short HospitalCard/PatientCardApplet.bloodTypeLen
+					invokestatic 44;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					sload 4;
+					getfield_s_this 14;		// short HospitalCard/PatientCardApplet.bloodTypeLen
 					sadd;
-					sstore 5;
-					aload_2;
-					sload 5;
-					sinc 5 1;
-					baload;
-					sstore 6;
-					sload 6;
-					iflt L24;
-				L23:	sload 6;
-					bspush 20;
-					if_scmple L25;
-				L24:	sspush 26368;
-					invokestatic 25;		// javacard/framework/ISOException.throwIt(S)V
-				L25:	aload_2;
-					sload 5;
-					getfield_a_this 14;		// reference HospitalCard/PatientCardApplet.healthInsuranceId
-					sconst_0;
-					sload 6;
-					invokestatic 43;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
-					pop;
+					sstore 4;
 					aload_0;
-					sload 6;
-					putfield_s 15;		// short HospitalCard/PatientCardApplet.healthIdLen
+					aload_2;
+					sload 4;
+					sinc 4 1;
+					baload;
+					putfield_s 15;		// short HospitalCard/PatientCardApplet.allergiesLen
+					aload_2;
+					sload 4;
+					getfield_a_this 6;		// reference HospitalCard/PatientCardApplet.allergies
+					sconst_0;
+					getfield_s_this 15;		// short HospitalCard/PatientCardApplet.allergiesLen
+					invokestatic 44;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					sload 4;
+					getfield_s_this 15;		// short HospitalCard/PatientCardApplet.allergiesLen
+					sadd;
+					sstore 4;
+					aload_0;
+					aload_2;
+					sload 4;
+					sinc 4 1;
+					baload;
+					putfield_s 16;		// short HospitalCard/PatientCardApplet.chronicLen
+					aload_2;
+					sload 4;
+					getfield_a_this 7;		// reference HospitalCard/PatientCardApplet.chronicIllness
+					sconst_0;
+					getfield_s_this 16;		// short HospitalCard/PatientCardApplet.chronicLen
+					invokestatic 44;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					sload 4;
+					getfield_s_this 16;		// short HospitalCard/PatientCardApplet.chronicLen
+					sadd;
+					sstore 4;
+					aload_0;
+					aload_2;
+					sload 4;
+					sinc 4 1;
+					baload;
+					putfield_s 17;		// short HospitalCard/PatientCardApplet.healthIdLen
+					aload_2;
+					sload 4;
+					getfield_a_this 8;		// reference HospitalCard/PatientCardApplet.healthInsuranceId
+					sconst_0;
+					getfield_s_this 17;		// short HospitalCard/PatientCardApplet.healthIdLen
+					invokestatic 44;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
 					return;
+		}
+
+		.method private setRsaPrivateKey(Ljavacard/framework/APDU;)V {
+			.stack 4;
+			.locals 5;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	getfield_a_this 9;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
+					ifnonnull L2;
+				L1:	sspush 27265;
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	aload_1;
+					invokevirtual 23;		// getBuffer()[B
+					astore_2;
+				L3:	aload_1;
+					invokevirtual 36;		// setIncomingAndReceive()S
+					sstore_3;
+				L4:	sload_3;
+					ifgt L6;
+				L5:	sspush 27012;
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
+				L6:	sconst_5;
+					sstore 4;
+				L7:	aload_2;
+					sload 4;
+					baload;
+					sspush 255;
+					sand;
+					sstore 5;
+				L8:	sinc 4 1;
+					getfield_a_this 9;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
+					aload_2;
+					sload 4;
+					sload 5;
+					invokeinterface 4 49 7;		// javacard/security/RSAPrivateKey
+					sload 4;
+					sload 5;
+					sadd;
+					sstore 4;
+					aload_2;
+					sload 4;
+					baload;
+					sspush 255;
+					sand;
+					sstore 6;
+				L9:	sinc 4 1;
+					getfield_a_this 9;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
+					aload_2;
+					sload 4;
+					sload 6;
+					invokeinterface 4 49 6;		// javacard/security/RSAPrivateKey
+				L10:	goto L13;
+				L11:	astore 5;
+				L12:	sspush 27012;
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
+				L13:	return;
+			.exceptionTable {
+				// start_block end_block handler_block catch_type_index
+				L7 L10 L11 52;
+			}
+		}
+
+		.method private signChallenge(Ljavacard/framework/APDU;)V {
+			.stack 6;
+			.locals 3;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.pin
+					invokevirtual 39;		// isValidated()Z
+					ifne L2;
+				L1:	sspush 27010;
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	getfield_a_this 9;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
+					ifnonnull L4;
+				L3:	sspush 27265;
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	aload_1;
+					invokevirtual 23;		// getBuffer()[B
+					astore_2;
+				L5:	aload_2;
+					sconst_4;
+					baload;
+					sspush 255;
+					sand;
+					sstore_3;
+				L6:	aload_1;
+					invokevirtual 36;		// setIncomingAndReceive()S
+					pop;
+				L7:	getfield_a_this 10;		// reference HospitalCard/PatientCardApplet.rsaCipher
+					getfield_a_this 9;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
+					sconst_2;
+					invokevirtual 53;		// init(Ljavacard/security/Key;B)V
+					getfield_a_this 10;		// reference HospitalCard/PatientCardApplet.rsaCipher
+					aload_2;
+					sconst_5;
+					sload_3;
+					aload_2;
+					sconst_0;
+					invokevirtual 54;		// doFinal([BSS[BS)S
+					sstore 4;
+				L8:	aload_1;
+					sconst_0;
+					sload 4;
+					invokevirtual 42;		// setOutgoingAndSend(SS)V
+				L9:	goto L12;
+				L10:	astore 4;
+				L11:	sspush 28416;
+					invokestatic 24;		// javacard/framework/ISOException.throwIt(S)V
+				L12:	return;
+			.exceptionTable {
+				// start_block end_block handler_block catch_type_index
+				L7 L9 L10 45;
+			}
 		}
 
 	}

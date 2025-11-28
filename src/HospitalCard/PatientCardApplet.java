@@ -1,94 +1,67 @@
 package HospitalCard;
 
 import javacard.framework.*;
+import javacard.security.*;
+import javacardx.crypto.Cipher;
 
 public class PatientCardApplet extends Applet {
 
     private final static byte CARD_CLA = (byte) 0xB0;
 
-    // Lnh PIN
     private final static byte INS_VERIFY_PIN   = (byte) 0x20;
     private final static byte INS_CHANGE_PIN   = (byte) 0x21;
-    private final static byte INS_SET_PIN      = (byte) 0x22; // ADMIN t PIN mi, không cn verify
-
-    // Lnh ví
+    private final static byte INS_SET_PIN      = (byte) 0x22;
     private final static byte INS_GET_BALANCE  = (byte) 0x30;
     private final static byte INS_CREDIT       = (byte) 0x31;
     private final static byte INS_DEBIT        = (byte) 0x32;
-
-    // Lnh liên quan n h s bnh nhân
     private final static byte INS_SET_PATIENT_ID = (byte) 0x40;
     private final static byte INS_GET_PATIENT_ID = (byte) 0x41;
-    private final static byte INS_SET_PROFILE    = (byte) 0x42; // ghi h s tóm tt
+    private final static byte INS_SET_PROFILE    = (byte) 0x42;
+    private final static byte INS_SET_RSA_KEY    = (byte) 0x50;
+    private final static byte INS_SIGN_CHALLENGE = (byte) 0x51;
 
-    // PIN & s d
+    private static final byte PIN_TRY_LIMIT      = 3;
+    private static final byte MAX_PIN_SIZE       = 6;
+    private static final short MAX_PATIENT_ID_LEN = 20;
+    private static final short MAX_FULLNAME_LEN  = 40;
+    private static final short MAX_DOB_LEN       = 10;
+    private static final short MAX_BLOODTYPE_LEN = 3;
+    private static final short MAX_ALLERGIES_LEN = 40;
+    private static final short MAX_CHRONIC_LEN   = 40;
+    private static final short MAX_HEALTHID_LEN  = 20;
+
     private OwnerPIN pin;
     private short balance;
-    private static final byte PIN_TRY_LIMIT = 3;
-    private static final byte MAX_PIN_SIZE  = 6;  // PIN ti a 6 s
-
-    // patient_id
-    private static final short MAX_PATIENT_ID_LEN = 20;
     private byte[] patientId;
     private short patientIdLen;
+    private byte[] fullName, dateOfBirth, bloodType, allergies, chronicIllness, healthInsuranceId;
+    private short fullNameLen, dateOfBirthLen, bloodTypeLen, allergiesLen, chronicLen, healthIdLen;
 
-    // H s bnh nhân (tóm tt)
-    private static final short MAX_FULLNAME_LEN    = 40;
-    private static final short MAX_DOB_LEN         = 10; // YYYY-MM-DD
-    private static final short MAX_BLOODTYPE_LEN   = 3;
-    private static final short MAX_ALLERGIES_LEN   = 40;
-    private static final short MAX_CHRONIC_LEN     = 40;
-    private static final short MAX_HEALTHID_LEN    = 20;
-
-    private byte[] fullName;
-    private short fullNameLen;
-
-    private byte[] dateOfBirth;
-    private short dateOfBirthLen;
-
-    private byte[] bloodType;
-    private short bloodTypeLen;
-
-    private byte[] allergies;
-    private short allergiesLen;
-
-    private byte[] chronicIllness;
-    private short chronicLen;
-
-    private byte[] healthInsuranceId;
-    private short healthIdLen;
+    private RSAPrivateKey rsaPrivKey;
+    private Cipher rsaCipher;
 
     protected PatientCardApplet(byte[] bArray, short bOffset, byte bLength) {
-        // PIN mc nh 1234 (sau này admin có th override bng INS_SET_PIN)
         pin = new OwnerPIN(PIN_TRY_LIMIT, MAX_PIN_SIZE);
         byte[] defaultPin = { (byte)'1', (byte)'2', (byte)'3', (byte)'4' };
         pin.update(defaultPin, (short)0, (byte)4);
-
-        // S d ban u
         balance = 0;
 
-        // Khi to patient_id
         patientId = new byte[MAX_PATIENT_ID_LEN];
-        patientIdLen = 0;
-
-        // Khi to các field h s
         fullName = new byte[MAX_FULLNAME_LEN];
-        fullNameLen = 0;
-
         dateOfBirth = new byte[MAX_DOB_LEN];
-        dateOfBirthLen = 0;
-
         bloodType = new byte[MAX_BLOODTYPE_LEN];
-        bloodTypeLen = 0;
-
         allergies = new byte[MAX_ALLERGIES_LEN];
-        allergiesLen = 0;
-
         chronicIllness = new byte[MAX_CHRONIC_LEN];
-        chronicLen = 0;
-
         healthInsuranceId = new byte[MAX_HEALTHID_LEN];
-        healthIdLen = 0;
+
+        // --- QUAN TRNG: KHI TO RSA 512 bit ---
+        try {
+            rsaPrivKey = (RSAPrivateKey) KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PRIVATE, KeyBuilder.LENGTH_RSA_512, false);
+            rsaCipher = Cipher.getInstance(Cipher.ALG_RSA_PKCS1, false);
+        } catch (CryptoException e) {
+            // Nu th không h tr 512, rsaPrivKey s null
+            rsaPrivKey = null;
+        }
 
         register();
     }
@@ -99,240 +72,153 @@ public class PatientCardApplet extends Applet {
 
     public void process(APDU apdu) {
         if (selectingApplet()) return;
-
         byte[] buffer = apdu.getBuffer();
+        if (buffer[ISO7816.OFFSET_CLA] == 0x00 && buffer[ISO7816.OFFSET_INS] == (byte)0xA4) return;
+        if (buffer[ISO7816.OFFSET_CLA] != CARD_CLA) ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED);
 
-        // B qua SELECT chun ISO
-        if (buffer[ISO7816.OFFSET_CLA] == (byte)0x00 &&
-            buffer[ISO7816.OFFSET_INS] == (byte)0xA4) {
-            return;
-        }
-
-        if (buffer[ISO7816.OFFSET_CLA] != CARD_CLA) {
-            ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED);
-        }
-
-        byte ins = buffer[ISO7816.OFFSET_INS];
-
-        switch (ins) {
-            case INS_VERIFY_PIN:
-                verifyPIN(apdu);
-                break;
-            case INS_CHANGE_PIN:
-                changePIN(apdu);
-                break;
-            case INS_SET_PIN:
-                setPinFromAdmin(apdu);
-                break;
-            case INS_GET_BALANCE:
-                getBalance(apdu);
-                break;
-            case INS_CREDIT:
-                credit(apdu);
-                break;
-            case INS_DEBIT:
-                debit(apdu);
-                break;
-            case INS_SET_PATIENT_ID:
-                setPatientId(apdu);
-                break;
-            case INS_GET_PATIENT_ID:
-                getPatientId(apdu);
-                break;
-            case INS_SET_PROFILE:
-                setProfile(apdu);
-                break;
-            default:
-                ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
+        switch (buffer[ISO7816.OFFSET_INS]) {
+            case INS_VERIFY_PIN:     verifyPIN(apdu); break;
+            case INS_CHANGE_PIN:     changePIN(apdu); break;
+            case INS_SET_PIN:        setPinFromAdmin(apdu); break;
+            case INS_GET_BALANCE:    getBalance(apdu); break;
+            case INS_CREDIT:         credit(apdu); break;
+            case INS_DEBIT:          debit(apdu); break;
+            case INS_SET_PATIENT_ID: setPatientId(apdu); break;
+            case INS_GET_PATIENT_ID: getPatientId(apdu); break;
+            case INS_SET_PROFILE:    setProfile(apdu); break;
+            case INS_SET_RSA_KEY:    setRsaPrivateKey(apdu); break;
+            case INS_SIGN_CHALLENGE: signChallenge(apdu); break;
+            default: ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
         }
     }
 
-    // ===== XÁC THC PIN =====
     private void verifyPIN(APDU apdu) {
         byte[] buf = apdu.getBuffer();
-        byte numBytes = buf[ISO7816.OFFSET_LC];
+        byte len = buf[ISO7816.OFFSET_LC];
         apdu.setIncomingAndReceive();
-
-        if (pin.check(buf, ISO7816.OFFSET_CDATA, numBytes)) {
-            return; // PIN úng
-        } else {
-            if (pin.getTriesRemaining() == 0) {
-                ISOException.throwIt((short)0x6983); // th b khóa
-            }
-            short sw = (short)(0x63C0 | pin.getTriesRemaining());
-            ISOException.throwIt(sw); // PIN sai, còn X ln th
-        }
+        if (pin.check(buf, ISO7816.OFFSET_CDATA, len)) return;
+        short tries = pin.getTriesRemaining();
+        if (tries == 0) ISOException.throwIt((short)0x6983);
+        ISOException.throwIt((short)(0x63C0 | tries));
     }
 
-    // ===== I PIN (bnh nhân dùng, yêu cu ã verify) =====
     private void changePIN(APDU apdu) {
-        if (!pin.isValidated()) {
-            ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
-        }
-
+        if (!pin.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
         byte[] buf = apdu.getBuffer();
-        byte numBytes = buf[ISO7816.OFFSET_LC];
+        byte len = buf[ISO7816.OFFSET_LC];
         apdu.setIncomingAndReceive();
-
-        if (numBytes <= 0 || numBytes > MAX_PIN_SIZE) {
-            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-        }
-
-        pin.update(buf, ISO7816.OFFSET_CDATA, numBytes);
+        if (len < 4 || len > MAX_PIN_SIZE) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        pin.update(buf, ISO7816.OFFSET_CDATA, len);
     }
 
-    // ===== T PIN T ADMIN (không cn verify) =====
     private void setPinFromAdmin(APDU apdu) {
         byte[] buf = apdu.getBuffer();
-        byte numBytes = buf[ISO7816.OFFSET_LC];
+        byte len = buf[ISO7816.OFFSET_LC];
         apdu.setIncomingAndReceive();
-
-        if (numBytes <= 0 || numBytes > MAX_PIN_SIZE) {
-            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-        }
-
-        // Reset trng thái PIN (s ln th) ri t PIN mi
+        if (len < 4 || len > MAX_PIN_SIZE) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         pin.reset();
-        pin.update(buf, ISO7816.OFFSET_CDATA, numBytes);
+        pin.update(buf, ISO7816.OFFSET_CDATA, len);
     }
 
-    // ===== LY S D =====
     private void getBalance(APDU apdu) {
-        if (!pin.isValidated()) {
-            ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
-        }
+        if (!pin.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
         byte[] buf = apdu.getBuffer();
         Util.setShort(buf, (short)0, balance);
         apdu.setOutgoingAndSend((short)0, (short)2);
     }
 
-    // ===== NP TIN =====
     private void credit(APDU apdu) {
-        if (!pin.isValidated()) {
-            ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
-        }
+        if (!pin.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
         byte[] buf = apdu.getBuffer();
         apdu.setIncomingAndReceive();
-        short amount = Util.getShort(buf, ISO7816.OFFSET_CDATA);
-        if (amount <= 0) {
-            ISOException.throwIt(ISO7816.SW_DATA_INVALID);
-        }
-        balance += amount;
+        short money = Util.getShort(buf, ISO7816.OFFSET_CDATA);
+        if (money <= 0) ISOException.throwIt(ISO7816.SW_DATA_INVALID);
+        balance += money;
     }
 
-    // ===== THANH TOÁN =====
     private void debit(APDU apdu) {
-        if (!pin.isValidated()) {
-            ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
-        }
+        if (!pin.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
         byte[] buf = apdu.getBuffer();
         apdu.setIncomingAndReceive();
-        short amount = Util.getShort(buf, ISO7816.OFFSET_CDATA);
-        if (amount <= 0) {
-            ISOException.throwIt(ISO7816.SW_DATA_INVALID);
-        }
-        if (balance < amount) {
-            ISOException.throwIt(ISO7816.SW_FILE_FULL); // không  tin
-        }
-        balance -= amount;
+        short money = Util.getShort(buf, ISO7816.OFFSET_CDATA);
+        if (money <= 0) ISOException.throwIt(ISO7816.SW_DATA_INVALID);
+        if (balance < money) ISOException.throwIt(ISO7816.SW_FILE_FULL);
+        balance -= money;
     }
 
-    // ===== GHI PATIENT_ID (admin dùng khi cp th) =====
     private void setPatientId(APDU apdu) {
         byte[] buf = apdu.getBuffer();
-        short lc = (short)(buf[ISO7816.OFFSET_LC] & 0xFF);
-
-        if (lc <= 0 || lc > MAX_PATIENT_ID_LEN) {
-            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-        }
-
-        short recvLen = apdu.setIncomingAndReceive();
-        Util.arrayCopyNonAtomic(buf, ISO7816.OFFSET_CDATA, patientId, (short)0, recvLen);
-        patientIdLen = recvLen;
+        short len = (short)(buf[ISO7816.OFFSET_LC] & 0xFF);
+        if (len > MAX_PATIENT_ID_LEN) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        apdu.setIncomingAndReceive();
+        Util.arrayCopyNonAtomic(buf, ISO7816.OFFSET_CDATA, patientId, (short)0, len);
+        patientIdLen = len;
     }
 
-    // ===== C PATIENT_ID (kiosk dùng sau khi PIN OK) =====
     private void getPatientId(APDU apdu) {
-        if (!pin.isValidated()) {
-            ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
-        }
+        if (!pin.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
         byte[] buf = apdu.getBuffer();
         Util.arrayCopyNonAtomic(patientId, (short)0, buf, (short)0, patientIdLen);
         apdu.setOutgoingAndSend((short)0, patientIdLen);
     }
 
-    // ===== GHI H S TÓM TT LÊN TH =====
-    /*
-       Data gi cho INS_SET_PROFILE:
-
-       [lenFullName][fullName bytes]
-       [lenDob][dob bytes]
-       [lenBlood][blood bytes]
-       [lenAllergies][allergies bytes]
-       [lenChronic][chronic bytes]
-       [lenHealthId][healthId bytes]
-    */
     private void setProfile(APDU apdu) {
         byte[] buf = apdu.getBuffer();
         short lc = (short)(buf[ISO7816.OFFSET_LC] & 0xFF);
-        if (lc <= 0) {
-            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-        }
-
-        short recvLen = apdu.setIncomingAndReceive();
+        apdu.setIncomingAndReceive();
         short offset = ISO7816.OFFSET_CDATA;
+        fullNameLen = buf[offset++];
+        Util.arrayCopyNonAtomic(buf, offset, fullName, (short)0, fullNameLen); offset += fullNameLen;
+        dateOfBirthLen = buf[offset++];
+        Util.arrayCopyNonAtomic(buf, offset, dateOfBirth, (short)0, dateOfBirthLen); offset += dateOfBirthLen;
+        bloodTypeLen = buf[offset++];
+        Util.arrayCopyNonAtomic(buf, offset, bloodType, (short)0, bloodTypeLen); offset += bloodTypeLen;
+        allergiesLen = buf[offset++];
+        Util.arrayCopyNonAtomic(buf, offset, allergies, (short)0, allergiesLen); offset += allergiesLen;
+        chronicLen = buf[offset++];
+        Util.arrayCopyNonAtomic(buf, offset, chronicIllness, (short)0, chronicLen); offset += chronicLen;
+        healthIdLen = buf[offset++];
+        Util.arrayCopyNonAtomic(buf, offset, healthInsuranceId, (short)0, healthIdLen); 
+    }
 
-        // 1. H tên
-        byte len = buf[offset++];
-        if (len < 0 || (short)len > MAX_FULLNAME_LEN) {
-            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-        }
-        Util.arrayCopyNonAtomic(buf, offset, fullName, (short)0, len);
-        fullNameLen = (short)len;
-        offset += len;
+    // --- RSA FIX ---
+    private void setRsaPrivateKey(APDU apdu) {
+        if (rsaPrivKey == null) ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
 
-        // 2. Ngày sinh
-        len = buf[offset++];
-        if (len < 0 || (short)len > MAX_DOB_LEN) {
-            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-        }
-        Util.arrayCopyNonAtomic(buf, offset, dateOfBirth, (short)0, len);
-        dateOfBirthLen = (short)len;
-        offset += len;
+        byte[] buf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive(); // c d liu
+        if (len <= 0) ISOException.throwIt(ISO7816.SW_DATA_INVALID);
 
-        // 3. Nhóm máu
-        len = buf[offset++];
-        if (len < 0 || (short)len > MAX_BLOODTYPE_LEN) {
-            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-        }
-        Util.arrayCopyNonAtomic(buf, offset, bloodType, (short)0, len);
-        bloodTypeLen = (short)len;
-        offset += len;
+        short offset = ISO7816.OFFSET_CDATA;
+        try {
+            // 1. Modulus
+            short lenMod = (short)(buf[offset] & 0xFF);
+            offset++; 
+            rsaPrivKey.setModulus(buf, offset, lenMod);
+            offset += lenMod;
 
-        // 4. D ng
-        len = buf[offset++];
-        if (len < 0 || (short)len > MAX_ALLERGIES_LEN) {
-            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+            // 2. Exponent
+            short lenExp = (short)(buf[offset] & 0xFF);
+            offset++;
+            rsaPrivKey.setExponent(buf, offset, lenExp);
+        } catch (Exception e) {
+            ISOException.throwIt(ISO7816.SW_DATA_INVALID);
         }
-        Util.arrayCopyNonAtomic(buf, offset, allergies, (short)0, len);
-        allergiesLen = (short)len;
-        offset += len;
+    }
 
-        // 5. Bnh mãn tính
-        len = buf[offset++];
-        if (len < 0 || (short)len > MAX_CHRONIC_LEN) {
-            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-        }
-        Util.arrayCopyNonAtomic(buf, offset, chronicIllness, (short)0, len);
-        chronicLen = (short)len;
-        offset += len;
+    private void signChallenge(APDU apdu) {
+        if (!pin.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
+        if (rsaPrivKey == null) ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
 
-        // 6. Mã BHYT
-        len = buf[offset++];
-        if (len < 0 || (short)len > MAX_HEALTHID_LEN) {
-            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        byte[] buf = apdu.getBuffer();
+        short len = (short)(buf[ISO7816.OFFSET_LC] & 0xFF);
+        apdu.setIncomingAndReceive();
+        try {
+            rsaCipher.init(rsaPrivKey, Cipher.MODE_ENCRYPT);
+            short sigLen = rsaCipher.doFinal(buf, ISO7816.OFFSET_CDATA, len, buf, (short)0);
+            apdu.setOutgoingAndSend((short)0, sigLen);
+        } catch (CryptoException e) {
+            ISOException.throwIt(ISO7816.SW_UNKNOWN);
         }
-        Util.arrayCopyNonAtomic(buf, offset, healthInsuranceId, (short)0, len);
-        healthIdLen = (short)len;
     }
 }
