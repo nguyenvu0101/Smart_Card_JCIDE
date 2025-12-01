@@ -8,7 +8,7 @@ public class PatientCardApplet extends Applet {
 
     private final static byte CARD_CLA = (byte) 0x80;
 
-    // ... (Các mã lnh c gi nguyên) ...
+    // ... (Cï¿½c mï¿½ lnh c gi nguyï¿½n) ...
     private final static byte INS_SET_SALT        = (byte) 0x20;
     private final static byte INS_SET_PIN_HASH    = (byte) 0x21;
     private final static byte INS_SET_WRAP_USER   = (byte) 0x22;
@@ -19,11 +19,11 @@ public class PatientCardApplet extends Applet {
     private final static byte INS_VERIFY_PIN_HASH = (byte) 0x26;
     private final static byte INS_GET_DATA_ENC    = (byte) 0x27;
 
-    // === THÊM MÃ LNH MI CHO TRNG THÁI TH ===
-    private final static byte INS_GET_STATUS      = (byte) 0x28; // Ly trng thái
-    private final static byte INS_SET_STATUS      = (byte) 0x29; // Cp nht trng thái
+    // === THï¿½M Mï¿½ LNH MI CHO TRNG THï¿½I TH ===
+    private final static byte INS_GET_STATUS      = (byte) 0x28; // Ly trng thï¿½i
+    private final static byte INS_SET_STATUS      = (byte) 0x29; // Cp nht trng thï¿½i
 
-    // ... (Các lnh ví, rsa gi nguyên) ...
+    // ... (Cï¿½c lnh vï¿½, rsa gi nguyï¿½n) ...
     private final static byte INS_GET_BALANCE     = (byte) 0x30;
     private final static byte INS_CREDIT          = (byte) 0x31;
     private final static byte INS_DEBIT           = (byte) 0x32;
@@ -37,7 +37,7 @@ public class PatientCardApplet extends Applet {
     private byte[] wrappedMkAdmin;
     private byte[] encryptedProfile;
     
-    // === THÊM BIN C TRNG THÁI ===
+    // === THï¿½M BIN C TRNG THï¿½I ===
     private byte[] cardStatus; // [0]: 1=FirstLogin, 0=Normal
 
     private short profileLen;
@@ -52,16 +52,16 @@ public class PatientCardApplet extends Applet {
     private Cipher rsaCipher;
 
     protected PatientCardApplet(byte[] bArray, short bOffset, byte bLength) {
-        // 1. Cp phát
+        // 1. Cp phï¿½t
         saltUser        = new byte[16];
         hashedPinUser   = new byte[32];
         wrappedMkUser   = new byte[32];
         wrappedMkAdmin  = new byte[32];
         encryptedProfile = new byte[256];
         
-        // Cp phát bin trng thái
+        // Cp phï¿½t bin trng thï¿½i
         cardStatus = new byte[1];
-        cardStatus[0] = 1; // Mc nh là 1 (Ln u tiên)
+        cardStatus[0] = 1; // Mc nh lï¿½ 1 (Ln u tiï¿½n)
 
         // 2. Init bin
         profileLen = 0;
@@ -97,12 +97,12 @@ public class PatientCardApplet extends Applet {
             ins == INS_SET_WRAP_USER || ins == INS_SET_WRAP_ADMIN || 
             ins == INS_SET_PROFILE_ENC || ins == INS_VERIFY_PIN_HASH ||
             ins == INS_CREDIT || ins == INS_DEBIT || ins == INS_SIGN_CHALLENGE ||
-            ins == INS_SET_STATUS) { // Thêm lnh set status
+            ins == INS_SET_STATUS) { // Thï¿½m lnh set status
             apdu.setIncomingAndReceive();
         }
 
         switch (ins) {
-            // ... (Các case c gi nguyên) ...
+            // ... (Cï¿½c case c gi nguyï¿½n) ...
             case INS_SET_SALT: Util.arrayCopy(buf, ISO7816.OFFSET_CDATA, saltUser, (short)0, (short)16); break;
             case INS_SET_PIN_HASH: Util.arrayCopy(buf, ISO7816.OFFSET_CDATA, hashedPinUser, (short)0, (short)32); break;
             case INS_SET_WRAP_USER: Util.arrayCopy(buf, ISO7816.OFFSET_CDATA, wrappedMkUser, (short)0, (short)32); break;
@@ -133,29 +133,36 @@ public class PatientCardApplet extends Applet {
                 break;
 
             case INS_GET_DATA_ENC:
-                if (!isUserLoggedIn) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
                 if (buf[ISO7816.OFFSET_P1] == 0x01) {
+                    // Láº¥y Wrapped Key User - Cáº§n login
+                    if (!isUserLoggedIn) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
                     Util.arrayCopyNonAtomic(wrappedMkUser, (short)0, buf, (short)0, (short)32);
                     apdu.setOutgoingAndSend((short)0, (short)32);
+                } else if (buf[ISO7816.OFFSET_P1] == 0x03) {
+                    // Láº¥y Wrapped Key Admin (cho chá»©c nÄƒng reset PIN) - KhÃ´ng cáº§n login vÃ¬ Admin Ä‘Ã£ verify
+                    Util.arrayCopyNonAtomic(wrappedMkAdmin, (short)0, buf, (short)0, (short)32);
+                    apdu.setOutgoingAndSend((short)0, (short)32);
                 } else {
+                    // Láº¥y Encrypted Profile - Cáº§n login
+                    if (!isUserLoggedIn) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
                     Util.arrayCopyNonAtomic(encryptedProfile, (short)0, buf, (short)0, profileLen);
                     apdu.setOutgoingAndSend((short)0, profileLen);
                 }
                 break;
 
-            // === LOGIC TRNG THÁI TH (MI) ===
+            // === LOGIC TRNG THï¿½I TH (MI) ===
             case INS_GET_STATUS:
-                // Tr v byte trng thái (1=FirstLogin, 0=Normal)
+                // Tr v byte trng thï¿½i (1=FirstLogin, 0=Normal)
                 buf[0] = cardStatus[0];
                 apdu.setOutgoingAndSend((short)0, (short)1);
                 break;
 
             case INS_SET_STATUS:
-                // Cp nht trng thái (Gi 0x00 xung  tt FirstLogin)
+                // Cp nht trng thï¿½i (Gi 0x00 xung  tt FirstLogin)
                 cardStatus[0] = buf[ISO7816.OFFSET_CDATA];
                 break;
 
-            // ... (Các case Ví, RSA gi nguyên code c ca bn) ...
+            // ... (Cï¿½c case Vï¿½, RSA gi nguyï¿½n code c ca bn) ...
             case INS_GET_BALANCE:
                 if (!isUserLoggedIn) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
                 Util.setShort(buf, (short)0, balance);

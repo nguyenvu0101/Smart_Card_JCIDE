@@ -1,5 +1,5 @@
 // converted by version 1.3
-// on Sat Nov 29 13:05:34 ICT 2025
+// on Mon Dec 01 09:52:42 ICT 2025
 
 .package HospitalCard {
 	.aid 0x0:0x11:0x22:0x33:0x44:0x55:0x67;
@@ -318,7 +318,7 @@
 					invokevirtual 29;		// setIncomingAndReceive()S
 					pop;
 				L17:	sload_3;
-					stableswitch L70 32 82 L18 L19 L20 L21 L22 L26 L27 L32 L37 L38 L70 L70 L70 L70 L70 L70 L39 L42 L45 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L70 L58 L51;
+					stableswitch L74 32 82 L18 L19 L20 L21 L22 L26 L27 L32 L41 L42 L74 L74 L74 L74 L74 L74 L43 L46 L49 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L74 L62 L55;
 				L18:	aload_2;
 					sconst_5;
 					getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.saltUser
@@ -326,7 +326,7 @@
 					bspush 16;
 					invokestatic 30;		// javacard/framework/Util.arrayCopy([BS[BSS)S
 					pop;
-					goto_w L71;
+					goto_w L75;
 				L19:	aload_2;
 					sconst_5;
 					getfield_a_this 1;		// reference HospitalCard/PatientCardApplet.hashedPinUser
@@ -334,7 +334,7 @@
 					bspush 32;
 					invokestatic 30;		// javacard/framework/Util.arrayCopy([BS[BSS)S
 					pop;
-					goto_w L71;
+					goto_w L75;
 				L20:	aload_2;
 					sconst_5;
 					getfield_a_this 2;		// reference HospitalCard/PatientCardApplet.wrappedMkUser
@@ -342,7 +342,7 @@
 					bspush 32;
 					invokestatic 30;		// javacard/framework/Util.arrayCopy([BS[BSS)S
 					pop;
-					goto_w L71;
+					goto_w L75;
 				L21:	aload_2;
 					sconst_5;
 					getfield_a_this 3;		// reference HospitalCard/PatientCardApplet.wrappedMkAdmin
@@ -350,7 +350,7 @@
 					bspush 32;
 					invokestatic 30;		// javacard/framework/Util.arrayCopy([BS[BSS)S
 					pop;
-					goto_w L71;
+					goto_w L75;
 				L22:	aload_2;
 					sconst_4;
 					baload;
@@ -375,7 +375,7 @@
 					aload_0;
 					sconst_3;
 					putfield_b 7;		// byte HospitalCard/PatientCardApplet.pinTries
-					goto_w L71;
+					goto_w L75;
 				L26:	getfield_a_this 0;		// reference HospitalCard/PatientCardApplet.saltUser
 					sconst_0;
 					aload_2;
@@ -387,7 +387,7 @@
 					sconst_0;
 					bspush 16;
 					invokevirtual 32;		// setOutgoingAndSend(SS)V
-					goto_w L71;
+					goto_w L75;
 				L27:	getfield_b_this 7;		// byte HospitalCard/PatientCardApplet.pinTries
 					ifne L29;
 				L28:	sspush 27011;
@@ -405,7 +405,7 @@
 					aload_0;
 					sconst_3;
 					putfield_b 7;		// byte HospitalCard/PatientCardApplet.pinTries
-					goto_w L71;
+					goto_w L75;
 				L31:	aload_0;
 					sconst_0;
 					putfield_b 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
@@ -420,16 +420,16 @@
 					getfield_b_this 7;		// byte HospitalCard/PatientCardApplet.pinTries
 					sor;
 					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
-					goto_w L71;
-				L32:	getfield_b_this 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
-					ifne L34;
-				L33:	sspush 27010;
-					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
-				L34:	aload_2;
+					goto_w L75;
+				L32:	aload_2;
 					sconst_2;
 					baload;
 					sconst_1;
 					if_scmpne L36;
+				L33:	getfield_b_this 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
+					ifne L35;
+				L34:	sspush 27010;
+					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
 				L35:	getfield_a_this 2;		// reference HospitalCard/PatientCardApplet.wrappedMkUser
 					sconst_0;
 					aload_2;
@@ -441,8 +441,29 @@
 					sconst_0;
 					bspush 32;
 					invokevirtual 32;		// setOutgoingAndSend(SS)V
-					goto_w L71;
-				L36:	getfield_a_this 4;		// reference HospitalCard/PatientCardApplet.encryptedProfile
+					goto_w L75;
+				L36:	aload_2;
+					sconst_2;
+					baload;
+					sconst_3;
+					if_scmpne L38;
+				L37:	getfield_a_this 3;		// reference HospitalCard/PatientCardApplet.wrappedMkAdmin
+					sconst_0;
+					aload_2;
+					sconst_0;
+					bspush 32;
+					invokestatic 31;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					aload_1;
+					sconst_0;
+					bspush 32;
+					invokevirtual 32;		// setOutgoingAndSend(SS)V
+					goto_w L75;
+				L38:	getfield_b_this 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
+					ifne L40;
+				L39:	sspush 27010;
+					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
+				L40:	getfield_a_this 4;		// reference HospitalCard/PatientCardApplet.encryptedProfile
 					sconst_0;
 					aload_2;
 					sconst_0;
@@ -453,8 +474,8 @@
 					sconst_0;
 					getfield_s_this 6;		// short HospitalCard/PatientCardApplet.profileLen
 					invokevirtual 32;		// setOutgoingAndSend(SS)V
-					goto_w L71;
-				L37:	aload_2;
+					goto_w L75;
+				L41:	aload_2;
 					sconst_0;
 					getfield_a_this 5;		// reference HospitalCard/PatientCardApplet.cardStatus
 					sconst_0;
@@ -464,19 +485,19 @@
 					sconst_0;
 					sconst_1;
 					invokevirtual 32;		// setOutgoingAndSend(SS)V
-					goto_w L71;
-				L38:	getfield_a_this 5;		// reference HospitalCard/PatientCardApplet.cardStatus
+					goto_w L75;
+				L42:	getfield_a_this 5;		// reference HospitalCard/PatientCardApplet.cardStatus
 					sconst_0;
 					aload_2;
 					sconst_5;
 					baload;
 					bastore;
-					goto_w L71;
-				L39:	getfield_b_this 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
-					ifne L41;
-				L40:	sspush 27010;
+					goto_w L75;
+				L43:	getfield_b_this 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
+					ifne L45;
+				L44:	sspush 27010;
 					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
-				L41:	aload_2;
+				L45:	aload_2;
 					sconst_0;
 					getfield_s_this 8;		// short HospitalCard/PatientCardApplet.balance
 					invokestatic 34;		// javacard/framework/Util.setShort([BSS)S
@@ -485,12 +506,12 @@
 					sconst_0;
 					sconst_2;
 					invokevirtual 32;		// setOutgoingAndSend(SS)V
-					goto_w L71;
-				L42:	getfield_b_this 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
-					ifne L44;
-				L43:	sspush 27010;
+					goto_w L75;
+				L46:	getfield_b_this 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
+					ifne L48;
+				L47:	sspush 27010;
 					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
-				L44:	aload_0;
+				L48:	aload_0;
 					dup;
 					getfield_s 8;		// short HospitalCard/PatientCardApplet.balance
 					aload_2;
@@ -498,39 +519,39 @@
 					invokestatic 35;		// javacard/framework/Util.getShort([BS)S
 					sadd;
 					putfield_s 8;		// short HospitalCard/PatientCardApplet.balance
-					goto_w L71;
-				L45:	getfield_b_this 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
-					ifne L47;
-				L46:	sspush 27010;
+					goto_w L75;
+				L49:	getfield_b_this 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
+					ifne L51;
+				L50:	sspush 27010;
 					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
-				L47:	aload_2;
+				L51:	aload_2;
 					sconst_5;
 					invokestatic 35;		// javacard/framework/Util.getShort([BS)S
 					sstore 5;
-				L48:	getfield_s_this 8;		// short HospitalCard/PatientCardApplet.balance
+				L52:	getfield_s_this 8;		// short HospitalCard/PatientCardApplet.balance
 					sload 5;
-					if_scmpge L50;
-				L49:	sspush 27269;
+					if_scmpge L54;
+				L53:	sspush 27269;
 					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
-				L50:	aload_0;
+				L54:	aload_0;
 					dup;
 					getfield_s 8;		// short HospitalCard/PatientCardApplet.balance
 					sload 5;
 					ssub;
 					putfield_s 8;		// short HospitalCard/PatientCardApplet.balance
-					goto_w L71;
-				L51:	getfield_a_this 10;		// reference HospitalCard/PatientCardApplet.rsaKeyPair
-					ifnonnull L53;
-				L52:	sspush 27265;
+					goto_w L75;
+				L55:	getfield_a_this 10;		// reference HospitalCard/PatientCardApplet.rsaKeyPair
+					ifnonnull L57;
+				L56:	sspush 27265;
 					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
-				L53:	getfield_a_this 10;		// reference HospitalCard/PatientCardApplet.rsaKeyPair
+				L57:	getfield_a_this 10;		// reference HospitalCard/PatientCardApplet.rsaKeyPair
 					invokevirtual 36;		// genKeyPair()V
 					getfield_a_this 12;		// reference HospitalCard/PatientCardApplet.rsaPubKey
 					aload_2;
 					sconst_2;
 					invokeinterface 3 19 5;		// javacard/security/RSAPublicKey
 					sstore 6;
-				L54:	aload_2;
+				L58:	aload_2;
 					sconst_0;
 					sload 6;
 					invokestatic 34;		// javacard/framework/Util.setShort([BSS)S
@@ -539,14 +560,14 @@
 					sload 6;
 					sadd;
 					sstore 7;
-				L55:	getfield_a_this 12;		// reference HospitalCard/PatientCardApplet.rsaPubKey
+				L59:	getfield_a_this 12;		// reference HospitalCard/PatientCardApplet.rsaPubKey
 					aload_2;
 					sload 7;
 					sconst_2;
 					sadd;
 					invokeinterface 3 19 4;		// javacard/security/RSAPublicKey
 					sstore 8;
-				L56:	aload_2;
+				L60:	aload_2;
 					sload 7;
 					sload 8;
 					invokestatic 34;		// javacard/framework/Util.setShort([BSS)S
@@ -557,29 +578,29 @@
 					sload 8;
 					sadd;
 					sstore 9;
-				L57:	aload_1;
+				L61:	aload_1;
 					sconst_0;
 					sload 9;
 					invokevirtual 32;		// setOutgoingAndSend(SS)V
-					goto L71;
-				L58:	getfield_b_this 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
-					ifne L60;
-				L59:	sspush 27010;
+					goto L75;
+				L62:	getfield_b_this 9;		// boolean HospitalCard/PatientCardApplet.isUserLoggedIn
+					ifne L64;
+				L63:	sspush 27010;
 					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
-				L60:	getfield_a_this 11;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
-					ifnull L62;
-				L61:	getfield_a_this 11;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
+				L64:	getfield_a_this 11;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
+					ifnull L66;
+				L65:	getfield_a_this 11;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
 					invokeinterface 1 16 3;		// javacard/security/RSAPrivateKey
-					ifne L63;
-				L62:	sspush 27013;
+					ifne L67;
+				L66:	sspush 27013;
 					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
-				L63:	aload_2;
+				L67:	aload_2;
 					sconst_4;
 					baload;
 					sspush 255;
 					sand;
 					sstore 10;
-				L64:	getfield_a_this 13;		// reference HospitalCard/PatientCardApplet.rsaCipher
+				L68:	getfield_a_this 13;		// reference HospitalCard/PatientCardApplet.rsaCipher
 					getfield_a_this 11;		// reference HospitalCard/PatientCardApplet.rsaPrivKey
 					sconst_2;
 					invokevirtual 37;		// init(Ljavacard/security/Key;B)V
@@ -591,21 +612,21 @@
 					sconst_0;
 					invokevirtual 38;		// doFinal([BSS[BS)S
 					sstore 11;
-				L65:	aload_1;
+				L69:	aload_1;
 					sconst_0;
 					sload 11;
 					invokevirtual 32;		// setOutgoingAndSend(SS)V
-				L66:	goto L71;
-				L67:	astore 11;
-				L68:	sspush 28416;
+				L70:	goto L75;
+				L71:	astore 11;
+				L72:	sspush 28416;
 					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
-				L69:	goto L71;
-				L70:	sspush 27904;
+				L73:	goto L75;
+				L74:	sspush 27904;
 					invokestatic 28;		// javacard/framework/ISOException.throwIt(S)V
-				L71:	return;
+				L75:	return;
 			.exceptionTable {
 				// start_block end_block handler_block catch_type_index
-				L64 L66 L67 17;
+				L68 L70 L71 17;
 			}
 		}
 
