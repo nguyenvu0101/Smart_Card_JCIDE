@@ -8,7 +8,7 @@ public class PatientCardApplet extends Applet {
 
     private final static byte CARD_CLA = (byte) 0x80;
 
-    // ... (C�c m� lnh c gi nguy�n) ...
+    // ... (Cc m lnh c gi nguyn) ...
     private final static byte INS_SET_SALT        = (byte) 0x20;
     private final static byte INS_SET_PIN_HASH    = (byte) 0x21;
     private final static byte INS_SET_WRAP_USER   = (byte) 0x22;
@@ -19,16 +19,25 @@ public class PatientCardApplet extends Applet {
     private final static byte INS_VERIFY_PIN_HASH = (byte) 0x26;
     private final static byte INS_GET_DATA_ENC    = (byte) 0x27;
 
-    // === TH�M M� LNH MI CHO TRNG TH�I TH ===
-    private final static byte INS_GET_STATUS      = (byte) 0x28; // Ly trng th�i
-    private final static byte INS_SET_STATUS      = (byte) 0x29; // Cp nht trng th�i
+    // === THM M LNH MI CHO TRNG THI TH ===
+    private final static byte INS_GET_STATUS      = (byte) 0x28; // Ly trng thi
+    private final static byte INS_SET_STATUS      = (byte) 0x29; // Cp nht trng thi
 
-    // ... (C�c lnh v�, rsa gi nguy�n) ...
+    // ... (Cc lnh v, rsa gi nguyn) ...
     private final static byte INS_GET_BALANCE     = (byte) 0x30;
     private final static byte INS_CREDIT          = (byte) 0x31;
     private final static byte INS_DEBIT           = (byte) 0x32;
     private final static byte INS_GEN_RSA_KEYPAIR = (byte) 0x52;
     private final static byte INS_SIGN_CHALLENGE  = (byte) 0x51;
+
+	// INS upload image
+    private final static byte INS_UPLOAD_IMAGE = (byte) 0x70;
+    
+    // Khai bo b nh cho nh
+    // Gi s gii hn nh ti a l 10KB (10240 bytes)
+    private static final short MAX_IMAGE_SIZE = (short) 10240; 
+    private byte[] avatarImage;
+    private short currentImageSize;
 
     // B nh
     private byte[] saltUser;
@@ -37,7 +46,7 @@ public class PatientCardApplet extends Applet {
     private byte[] wrappedMkAdmin;
     private byte[] encryptedProfile;
     
-    // === TH�M BIN C TRNG TH�I ===
+    // === THM BIN C TRNG THI ===
     private byte[] cardStatus; // [0]: 1=FirstLogin, 0=Normal
 
     private short profileLen;
@@ -52,16 +61,16 @@ public class PatientCardApplet extends Applet {
     private Cipher rsaCipher;
 
     protected PatientCardApplet(byte[] bArray, short bOffset, byte bLength) {
-        // 1. Cp ph�t
+        // 1. Cp pht
         saltUser        = new byte[16];
         hashedPinUser   = new byte[32];
         wrappedMkUser   = new byte[32];
         wrappedMkAdmin  = new byte[32];
         encryptedProfile = new byte[256];
         
-        // Cp ph�t bin trng th�i
+        // Cp pht bin trng thi
         cardStatus = new byte[1];
-        cardStatus[0] = 1; // Mc nh l� 1 (Ln u ti�n)
+        cardStatus[0] = 1; // Mc nh l 1 (Ln u tin)
 
         // 2. Init bin
         profileLen = 0;
@@ -76,6 +85,9 @@ public class PatientCardApplet extends Applet {
             rsaPubKey  = (RSAPublicKey) rsaKeyPair.getPublic();
             rsaCipher  = Cipher.getInstance(Cipher.ALG_RSA_PKCS1, false);
         } catch(Exception e) { rsaKeyPair = null; }
+
+        avatarImage = new byte[MAX_IMAGE_SIZE];
+        currentImageSize = 0;
 
         register(bArray, (short)(bOffset + 1), bArray[bOffset]);
     }
@@ -97,12 +109,12 @@ public class PatientCardApplet extends Applet {
             ins == INS_SET_WRAP_USER || ins == INS_SET_WRAP_ADMIN || 
             ins == INS_SET_PROFILE_ENC || ins == INS_VERIFY_PIN_HASH ||
             ins == INS_CREDIT || ins == INS_DEBIT || ins == INS_SIGN_CHALLENGE ||
-            ins == INS_SET_STATUS) { // Th�m lnh set status
+            ins == INS_SET_STATUS) { // Thm lnh set status
             apdu.setIncomingAndReceive();
         }
 
         switch (ins) {
-            // ... (C�c case c gi nguy�n) ...
+            // ... (Cc case c gi nguyn) ...
             case INS_SET_SALT: Util.arrayCopy(buf, ISO7816.OFFSET_CDATA, saltUser, (short)0, (short)16); break;
             case INS_SET_PIN_HASH: Util.arrayCopy(buf, ISO7816.OFFSET_CDATA, hashedPinUser, (short)0, (short)32); break;
             case INS_SET_WRAP_USER: Util.arrayCopy(buf, ISO7816.OFFSET_CDATA, wrappedMkUser, (short)0, (short)32); break;
@@ -134,35 +146,35 @@ public class PatientCardApplet extends Applet {
 
             case INS_GET_DATA_ENC:
                 if (buf[ISO7816.OFFSET_P1] == 0x01) {
-                    // Lấy Wrapped Key User - Cần login
+                    // Ly Wrapped Key User - Cn login
                     if (!isUserLoggedIn) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
                     Util.arrayCopyNonAtomic(wrappedMkUser, (short)0, buf, (short)0, (short)32);
                     apdu.setOutgoingAndSend((short)0, (short)32);
                 } else if (buf[ISO7816.OFFSET_P1] == 0x03) {
-                    // Lấy Wrapped Key Admin (cho chức năng reset PIN) - Không cần login vì Admin đã verify
+                    // Ly Wrapped Key Admin (cho chc nng reset PIN) - Kh�ng cn login v� Admin � verify
                     Util.arrayCopyNonAtomic(wrappedMkAdmin, (short)0, buf, (short)0, (short)32);
                     apdu.setOutgoingAndSend((short)0, (short)32);
                 } else {
-                    // Lấy Encrypted Profile - Cần login
+                    // Ly Encrypted Profile - Cn login
                     if (!isUserLoggedIn) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
                     Util.arrayCopyNonAtomic(encryptedProfile, (short)0, buf, (short)0, profileLen);
                     apdu.setOutgoingAndSend((short)0, profileLen);
                 }
                 break;
 
-            // === LOGIC TRNG TH�I TH (MI) ===
+            // === LOGIC TRNG THI TH (MI) ===
             case INS_GET_STATUS:
-                // Tr v byte trng th�i (1=FirstLogin, 0=Normal)
+                // Tr v byte trng thi (1=FirstLogin, 0=Normal)
                 buf[0] = cardStatus[0];
                 apdu.setOutgoingAndSend((short)0, (short)1);
                 break;
 
             case INS_SET_STATUS:
-                // Cp nht trng th�i (Gi 0x00 xung  tt FirstLogin)
+                // Cp nht trng thi (Gi 0x00 xung  tt FirstLogin)
                 cardStatus[0] = buf[ISO7816.OFFSET_CDATA];
                 break;
 
-            // ... (C�c case V�, RSA gi nguy�n code c ca bn) ...
+            // ... (Cc case V, RSA gi nguyn code c ca bn) ...
             case INS_GET_BALANCE:
                 if (!isUserLoggedIn) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
                 Util.setShort(buf, (short)0, balance);
@@ -199,8 +211,33 @@ public class PatientCardApplet extends Applet {
                     apdu.setOutgoingAndSend((short)0, sigLen);
                 } catch (Exception e) { ISOException.throwIt(ISO7816.SW_UNKNOWN); }
                 break;
-
+            case INS_UPLOAD_IMAGE:
+                uploadImage(apdu);
+                break;
             default: ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
+        }
+    }
+    
+    private void uploadImage(APDU apdu) {
+        byte[] buf = apdu.getBuffer();
+        
+        // Ly offset t P1 v P2 (V tr bt u ghi trong mng avatarImage)
+        short offset = Util.makeShort(buf[ISO7816.OFFSET_P1], buf[ISO7816.OFFSET_P2]);
+        
+        // Ly  di d liu gi xung
+        short dataLen = apdu.setIncomingAndReceive();
+        
+        // Kim tra trn b nh
+        if ((short)(offset + dataLen) > MAX_IMAGE_SIZE) {
+            ISOException.throwIt(ISO7816.SW_FILE_FULL);
+        }
+
+        // Copy d liu t buffer APDU vo mng lu tr
+        Util.arrayCopyNonAtomic(buf, ISO7816.OFFSET_CDATA, avatarImage, offset, dataLen);
+        
+        // Cp nht kch thc nh thc t (nu offset + len ln hn size hin ti)
+        if ((short)(offset + dataLen) > currentImageSize) {
+            currentImageSize = (short)(offset + dataLen);
         }
     }
 }
